@@ -13,6 +13,9 @@
         android:theme="@style/Theme.JBSapp"
         tools:targetApi="31">
         <activity
+            android:name=".lista_carro"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
