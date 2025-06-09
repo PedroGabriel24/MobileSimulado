@@ -1,24 +1,22 @@
 package com.solo.jbsapp;
 
-import java.time.LocalDateTime;
-
 public class Carro {
     private String placa;
-    private LocalDateTime dataEntrada;
-    private LocalDateTime dataSaida;
+    private String dtEntrada;
+    private String dtSaida;
 
     public Carro() {
     }
 
-    public Carro(String placa, LocalDateTime dataEntrada) {
+    public Carro(String placa, String dtEntrada) {
         this.placa = placa;
-        this.dataEntrada = dataEntrada;
+        this.dtEntrada = dtEntrada;
     }
 
-    public Carro(String placa, LocalDateTime dataEntrada, LocalDateTime dataSaida) {
+    public Carro(String placa, String dtEntrada, String dtSaida) {
         this.placa = placa;
-        this.dataEntrada = dataEntrada;
-        this.dataSaida = dataSaida;
+        this.dtEntrada = dtEntrada;
+        this.dtSaida = dtSaida;
     }
 
     public String getPlaca() {
@@ -29,19 +27,19 @@ public class Carro {
         this.placa = placa;
     }
 
-    public LocalDateTime getDataEntrada() {
-        return dataEntrada;
+    public String getDtEntrada() {
+        return dtEntrada;
     }
 
-    public void setDataEntrada(LocalDateTime dataEntrada) {
-        this.dataEntrada = dataEntrada;
+    public void setDtEntrada(String dtEntrada) {
+        this.dtEntrada = dtEntrada;
     }
 
-    public LocalDateTime getDataSaida() {
-        return dataSaida;
+    public String getDtSaida() {
+        return dtSaida;
     }
 
-    public void setDataSaida(LocalDateTime dataSaida) {
-        this.dataSaida = dataSaida;
+    public void setDtSaida(String dtSaida) {
+        this.dtSaida = dtSaida;
     }
 }
