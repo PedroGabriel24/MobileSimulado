@@ -2,10 +2,11 @@ package com.solo.jbsapp;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.service.controls.actions.FloatAction;
+import android.speech.RecognizerIntent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
@@ -14,15 +15,17 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.solo.jbsapp.databinding.ActivityListaCarroBinding;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class lista_carro extends AppCompatActivity {
-    private ActivityListaCarroBinding binding;
+public class ListaCarro extends AppCompatActivity {
+    private CarroRepository db = new CarroRepository();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,25 +37,27 @@ public class lista_carro extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        binding = ActivityListaCarroBinding.inflate(getLayoutInflater());
+        RecyclerView rv = findViewById(R.id.rv);
+        FloatingActionButton fab = findViewById(R.id.floatingActionButton);
 
-        binding.rv.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
+        rv.setLayoutManager(new GridLayoutManager(getApplicationContext(), 1));
         // Configurar o Adapter do RecyclerView
         List<Carro> listaCarro = new ArrayList<>();
-        AdapterCarro adapterNota = new AdapterCarro(listaCarro);
-        binding.rv.setAdapter(adapterNota);
+        AdapterCarro adapterCarro = new AdapterCarro(listaCarro);
+        rv.setAdapter(adapterCarro);
+        db.listar(listaCarro, adapterCarro, getApplicationContext());
 
 
-        binding.floatingActionButton.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Abrir modal para novo item
-                AlertDialog.Builder alertNovo = new AlertDialog.Builder(lista_carro.this);
-                EditText editPlaca = new EditText(lista_carro.this);
+                AlertDialog.Builder alertNovo = new AlertDialog.Builder(ListaCarro.this);
+                EditText editPlaca = new EditText(ListaCarro.this);
                 editPlaca.setHint("Placa");
 
                 // Layout do modal
-                LinearLayout layout = new LinearLayout(lista_carro.this);
+                LinearLayout layout = new LinearLayout(ListaCarro.this);
                 layout.setOrientation(LinearLayout.VERTICAL);
                 layout.addView(editPlaca);
                 layout.setPadding(30, 0, 30, 0);
@@ -65,8 +70,8 @@ public class lista_carro extends AppCompatActivity {
                 alertNovo.setPositiveButton("Registrar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Carro addNota = new Carro(editPlaca.getText().toString(), LocalDateTime.now());
-                        Toast.makeText(lista_carro.this, "Item adicionado", Toast.LENGTH_SHORT).show();
+                        Carro addCarro = new Carro(editPlaca.getText().toString(), LocalDateTime.now().toString());
+                        db.salvar(addCarro, ListaCarro.this);
                     }
                 });
                 alertNovo.setNegativeButton("Cancelar", null);
