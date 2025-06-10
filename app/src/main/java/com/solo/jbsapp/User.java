@@ -1,18 +1,16 @@
 package com.solo.jbsapp;
 
 public class User {
-    private Integer id;
     private String email;
     private String senha;
     private UserRole userRole;
 
     public User() {}
 
-    public User(String email, String senha, UserRole userRole,Integer id) {
+    public User(String email, String senha, UserRole userRole) {
         this.email = email;
         this.senha = senha;
         this.userRole = userRole;
-        this.id = id;
     }
 
     public String getEmail() {
@@ -33,10 +31,6 @@ public class User {
 
     public String getUserRole() {
         return userRole.getRole();
-    }
-
-    public Integer getId() {
-        return id;
     }
 
     public enum UserRole {
