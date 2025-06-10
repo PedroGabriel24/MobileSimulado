@@ -17,9 +17,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.solo.jbsapp.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,21 +31,16 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        Button button = findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
+        TextInputEditText emailField = findViewById(R.id.email);
+        TextInputEditText senhaField = findViewById(R.id.senha);
+        Button loginButton = findViewById(R.id.button); // Dê um ID ao seu botão no XML
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
-                TextInputEditText emailField = v.findViewById(R.id.email);
-                TextInputEditText senhaField = v.findViewById(R.id.senha);
 
-                // Verifica se os campos foram encontrados
-                if (emailField == null || senhaField == null) {
-                    Toast.makeText(v.getContext(), "Erro: Campos não encontrados", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                // Obtém os valores dos campos antes do callback
+                // Agora emailField e senhaField já estão inicializados e não serão null
                 String email = emailField.getText() != null ? emailField.getText().toString() : "";
                 String senha = senhaField.getText() != null ? senhaField.getText().toString() : "";
 
@@ -61,19 +55,19 @@ public class MainActivity extends AppCompatActivity {
 
                             if (email.equals(userEmail) && senha.equals(userSenha)) {
                                 encontrado = true;
-                                Intent intent = new Intent(v.getContext(), ListaCarro.class);
-                                v.getContext().startActivity(intent);
+                                Intent intent = new Intent(LoginActivity.this, ListaCarro.class); // Use SuaActivity.this para o contexto
+                                startActivity(intent); // Chame startActivity diretamente
                                 break;
                             }
                         }
 
                         if (!encontrado) {
-                            Toast.makeText(v.getContext(), "Senha ou email incorretos", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "Senha ou email incorretos", Toast.LENGTH_SHORT).show(); // Use SuaActivity.this para o contexto
                         }
                     }
                 });
             }
         });
-
     }
+
 }
