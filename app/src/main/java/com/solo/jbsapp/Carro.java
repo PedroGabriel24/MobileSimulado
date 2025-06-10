@@ -1,6 +1,7 @@
 package com.solo.jbsapp;
 
 public class Carro {
+    private int id;
     private String placa;
     private String dtEntrada;
     private String dtSaida;
@@ -8,12 +9,14 @@ public class Carro {
     public Carro() {
     }
 
-    public Carro(String placa, String dtEntrada) {
+    public Carro(int id, String placa, String dtEntrada) {
+        this.id = id;
         this.placa = placa;
         this.dtEntrada = dtEntrada;
     }
 
-    public Carro(String placa, String dtEntrada, String dtSaida) {
+    public Carro(int id, String placa, String dtEntrada, String dtSaida) {
+        this.id = id;
         this.placa = placa;
         this.dtEntrada = dtEntrada;
         this.dtSaida = dtSaida;
@@ -41,5 +44,13 @@ public class Carro {
 
     public void setDtSaida(String dtSaida) {
         this.dtSaida = dtSaida;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

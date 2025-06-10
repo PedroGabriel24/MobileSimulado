@@ -70,7 +70,7 @@ public class ListaCarro extends AppCompatActivity {
                 alertNovo.setPositiveButton("Registrar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Carro addCarro = new Carro(editPlaca.getText().toString(), LocalDateTime.now().toString());
+                        Carro addCarro = new Carro(listaCarro.size() + 1, editPlaca.getText().toString(), LocalDateTime.now().toString());
                         db.salvar(addCarro, ListaCarro.this);
                     }
                 });

@@ -24,7 +24,7 @@ public class CarroRepository {
     public void salvar(Carro carro, Context c){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("cars").document(carro.getPlaca()).set(carro).addOnCompleteListener(new OnCompleteListener<Void>() {
+        db.collection("cars").document(String.valueOf(carro.getId())).set(carro).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
@@ -36,16 +36,16 @@ public class CarroRepository {
         });
     }
 
-    public void remover(String placa, Context c){
+    public void remover(Carro carro, Context c){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("cars").document(placa).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+        db.collection("cars").document(String.valueOf(carro.getId())).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
-                    Toast.makeText(c, "Registrada a saída do carro de placa: " + placa, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(c, "Registrada a saída do carro de placa: " + carro.getPlaca(), Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(c, "Não foi possivel registrar a saída do carro de placa: " + placa, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(c, "Não foi possivel registrar a saída do carro de placa: " + carro.getPlaca(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -58,7 +58,7 @@ public class CarroRepository {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error != null){
-                    Toast.makeText(c, "Se fudeu", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(c, "Não foi possivel carregar os carros", Toast.LENGTH_SHORT).show();
                 }else{
                     lista.clear();
                     for(DocumentSnapshot doc : value.getDocuments()){
