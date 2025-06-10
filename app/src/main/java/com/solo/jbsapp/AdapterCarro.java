@@ -16,6 +16,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 public class AdapterCarro extends RecyclerView.Adapter<AdapterCarro.MyViewHolder> {
@@ -53,7 +54,12 @@ public class AdapterCarro extends RecyclerView.Adapter<AdapterCarro.MyViewHolder
                 if (listaCarro.get(holder.getAdapterPosition()).getDtSaida() == null) {
                     AlertDialog.Builder alertNovo = new AlertDialog.Builder(v.getContext());
                     TextView text = new TextView(v.getContext());
-                    text.setText("Deseja registrar a saída desse carro?");
+                    String dtSaida = LocalDateTime.now().toString();
+                    text.setText("" +
+                            "Placa: " + listaCarro.get(holder.getAdapterPosition()).getPlaca() + "\n" +
+                            "Data de Entrada: " + listaCarro.get(holder.getAdapterPosition()).getDtEntrada() + "\n" +
+                            "Data de Saída: " + dtSaida + "\n" +
+                            "Preço: " + calcularPreco(dtSaida, listaCarro.get(holder.getAdapterPosition()).getDtEntrada()));
 
                     // Layout do modal
                     LinearLayout layout = new LinearLayout(v.getContext());
@@ -63,13 +69,13 @@ public class AdapterCarro extends RecyclerView.Adapter<AdapterCarro.MyViewHolder
 
                     // Atribuir layout ao modal
                     alertNovo.setView(layout);
-                    alertNovo.setTitle("Registrar Saída");
+                    alertNovo.setTitle("Preço do estacionamento");
 
                     // Definir os botões
                     alertNovo.setPositiveButton("Registrar", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            db.salvar(new Carro(listaCarro.get(holder.getAdapterPosition()).getPlaca(), listaCarro.get(holder.getAdapterPosition()).getDtEntrada(), LocalDateTime.now().toString()), v.getContext());
+                            db.salvar(new Carro(listaCarro.get(holder.getAdapterPosition()).getId(), listaCarro.get(holder.getAdapterPosition()).getPlaca(), listaCarro.get(holder.getAdapterPosition()).getDtEntrada(), LocalDateTime.now().toString()), v.getContext());
                             holder.dataSaida.setVisibility(VISIBLE);
                             holder.dataSaida.setText("Data de Saída: " + listaCarro.get(holder.getAdapterPosition()).getDtSaida());
                         }
@@ -98,4 +104,13 @@ public class AdapterCarro extends RecyclerView.Adapter<AdapterCarro.MyViewHolder
             dataSaida = itemView.findViewById(R.id.saida_dt);
         }
     }
+
+    public String calcularPreco(String dtEntrada, String dtSaida) {
+        LocalDateTime entrada = LocalDateTime.parse(dtEntrada);
+        LocalDateTime saida = LocalDateTime.parse(dtSaida);
+        long duracao = entrada.toEpochSecond(ZoneOffset.UTC) - saida.toEpochSecond(ZoneOffset.UTC);
+        double preco = duracao * 0.01;
+        return "R$" + String.format("%.2f", preco);
+    }
+
 }

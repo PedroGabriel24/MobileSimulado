@@ -31,10 +31,10 @@ public class SplashScreen extends AppCompatActivity {
         ImageView gif = ((ImageView) findViewById(R.id.gif));
 
         Glide.with(this)
-                .load("https://camo.githubusercontent.com/bfb2b63eeb7b21626c1a896e6e58a55838135977ce8b5d7ee13a60080b56a1e7/68747470733a2f2f6173736574732d76322e6c6f7474696566696c65732e636f6d2f612f30336364633665302d313138622d313165652d626630382d3037643838613934316362642f696969774730764a514e2e676966")
+                .load("https://i.pinimg.com/originals/d9/f2/15/d9f21515b1e38d83e94fdbce88f623b6.gif")
                 .into(gif);
 
-        new Handler().postDelayed(this:: abrirTela, 3000);
+        new Handler().postDelayed(this:: abrirTela, 4000);
     }
 
     private void abrirTela(){
