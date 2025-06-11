@@ -1,13 +1,14 @@
 package com.solo.jbsapp;
 
 public class User {
+
     private String email;
     private String senha;
-    private UserRole userRole;
+    private Boolean userRole;
 
     public User() {}
 
-    public User(String email, String senha, UserRole userRole) {
+    public User(String email, String senha, Boolean userRole) {
         this.email = email;
         this.senha = senha;
         this.userRole = userRole;
@@ -29,21 +30,7 @@ public class User {
         this.senha = senha;
     }
 
-    public String getUserRole() {
-        return userRole.getRole();
-    }
-
-    public enum UserRole {
-        USER("user"),
-        ADMIN("admin");
-
-        private String role;
-
-        UserRole(String role) {
-            this.role = role;
-        }
-        public String getRole() {
-            return role;
-        }
+    public Boolean getUserRole() {
+        return this.userRole;
     }
 }

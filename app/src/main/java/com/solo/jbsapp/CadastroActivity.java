@@ -38,13 +38,18 @@ public class CadastroActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 db.cadastrarUser(
-                        new User(emailField.getText().toString(), senhaField.getText().toString(), User.UserRole.USER),
+                        new User(emailField.getText().toString(), senhaField.getText().toString(), true),
                         getApplicationContext(),
                         new UserRepository.CadastroCallback() {
                             @Override
-                            public void onCadastroConcluido(boolean sucesso) {
+                            public void onCadastroConcluido(boolean sucesso, String email, Boolean role) {
                                 if (sucesso){
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("email", email);
+                                    bundle.putBoolean("role", role);
+
                                     Intent intent = new Intent(CadastroActivity.this, ListaCarro.class);
+                                    intent.putExtras(bundle);
                                     startActivity(intent);
                                 }
                             }

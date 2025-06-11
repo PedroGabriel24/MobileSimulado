@@ -23,10 +23,13 @@ public class AdapterCarro extends RecyclerView.Adapter<AdapterCarro.MyViewHolder
 
     private List<Carro> listaCarro;
 
+    private String userEmail;
+
     private CarroRepository db = new CarroRepository();
 
-    public AdapterCarro(List<Carro> lista) {
+    public AdapterCarro(List<Carro> lista, String email) {
         this.listaCarro = lista;
+        this.userEmail = email;
     }
 
     @NonNull
@@ -43,6 +46,7 @@ public class AdapterCarro extends RecyclerView.Adapter<AdapterCarro.MyViewHolder
         holder.dataEntrada.setText("Data de Entrada: " + listaCarro.get(holder.getAdapterPosition()).getDtEntrada());
         if (listaCarro.get(holder.getAdapterPosition()).getDtSaida() != null){
             holder.dataSaida.setText("Data de Saída: " + listaCarro.get(holder.getAdapterPosition()).getDtSaida());
+            holder.dataSaida.setVisibility(VISIBLE);
         }else{
             holder.dataSaida.setVisibility(INVISIBLE);
         }
@@ -75,7 +79,13 @@ public class AdapterCarro extends RecyclerView.Adapter<AdapterCarro.MyViewHolder
                     alertNovo.setPositiveButton("Registrar", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            db.salvar(new Carro(listaCarro.get(holder.getAdapterPosition()).getId(), listaCarro.get(holder.getAdapterPosition()).getPlaca(), listaCarro.get(holder.getAdapterPosition()).getDtEntrada(), LocalDateTime.now().toString()), v.getContext());
+                            db.salvar(new Carro(
+                                    listaCarro.get(holder.getAdapterPosition()).getId(),
+                                    listaCarro.get(holder.getAdapterPosition()).getPlaca(),
+                                    listaCarro.get(holder.getAdapterPosition()).getDtEntrada(),
+                                    LocalDateTime.now().toString(),
+                                    userEmail),
+                                    v.getContext());
                             holder.dataSaida.setVisibility(VISIBLE);
                             holder.dataSaida.setText("Data de Saída: " + listaCarro.get(holder.getAdapterPosition()).getDtSaida());
                         }

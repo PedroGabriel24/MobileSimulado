@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -14,17 +15,20 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
 public class CarroRepository {
+
+    private final String COLLECTION = "cars";
 
     public CarroRepository(){}
 
     public void salvar(Carro carro, Context c){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("cars").document(String.valueOf(carro.getId())).set(carro).addOnCompleteListener(new OnCompleteListener<Void>() {
+        db.collection(COLLECTION).document(String.valueOf(carro.getId())).set(carro).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
@@ -39,7 +43,7 @@ public class CarroRepository {
     public void remover(Carro carro, Context c){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("cars").document(String.valueOf(carro.getId())).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+        db.collection(COLLECTION).document(String.valueOf(carro.getId())).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
@@ -54,7 +58,7 @@ public class CarroRepository {
     public void listar(List<Carro> lista, AdapterCarro adapterCarro, Context c){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("cars").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        db.collection(COLLECTION).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error != null){
@@ -67,6 +71,42 @@ public class CarroRepository {
                     }
                     adapterCarro.notifyDataSetChanged();
                 }
+            }
+        });
+    }
+
+    public void deletarMesAnterior(LocalDateTime atual, Context c){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection(COLLECTION).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (!task.isSuccessful()){
+                    Toast.makeText(c, "Não foi possivel se conectar com o banco.", Toast.LENGTH_LONG);
+                }
+                LocalDateTime atualMesAnterior = atual.minusMonths(1);
+
+                for (DocumentSnapshot doc : task.getResult().getDocuments()){
+                    Carro carro = doc.toObject(Carro.class);
+
+                    if (carro.getDtSaida() != null){
+                        LocalDateTime saida = LocalDateTime.parse(carro.getDtSaida());
+
+
+                        if (saida.isBefore(atualMesAnterior) || saida.isEqual(atualMesAnterior)){
+                            db.collection(COLLECTION)
+                                    .document(String.valueOf(carro.getId()))
+                                    .delete()
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(c, "Não foi possivel deletar a placa de número: "+ carro.getPlaca(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+                    }
+                }
+
             }
         });
     }

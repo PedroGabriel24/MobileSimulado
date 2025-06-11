@@ -48,9 +48,14 @@ public class LoginActivity extends AppCompatActivity {
                         getApplicationContext(),
                         new UserRepository.LoginCallback() {
                             @Override
-                            public void onLoginConcluido(boolean sucesso) {
+                            public void onLoginConcluido(boolean sucesso, String email, Boolean role) {
                                 if (sucesso){
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("email", email);
+                                    bundle.putBoolean("role", role);
+
                                     Intent intent = new Intent(LoginActivity.this, ListaCarro.class);
+                                    intent.putExtras(bundle);
                                     startActivity(intent);
                                 }
                             }
