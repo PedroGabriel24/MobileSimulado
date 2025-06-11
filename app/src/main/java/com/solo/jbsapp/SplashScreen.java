@@ -28,12 +28,6 @@ public class SplashScreen extends AppCompatActivity {
             return insets;
         });
 
-        ImageView gif = ((ImageView) findViewById(R.id.gif));
-
-        Glide.with(this)
-                .load("https://i.pinimg.com/originals/d9/f2/15/d9f21515b1e38d83e94fdbce88f623b6.gif")
-                .into(gif);
-
         new Handler().postDelayed(this:: abrirTela, 4000);
     }
 

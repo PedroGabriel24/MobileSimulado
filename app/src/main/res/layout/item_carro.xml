@@ -5,12 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
-    android:backgroundTint="@color/md_theme_errorContainer_mediumContrast"
+    android:backgroundTint="@color/md_theme_secondaryContainer_highContrast"
     app:cardCornerRadius="30dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="114dp">
+        android:layout_height="144dp"
+        android:padding="5sp">
 
         <TextView
             android:id="@+id/placa"
@@ -31,11 +32,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="12dp"
             android:layout_marginRight="10dp"
             android:text="Data de entrada: "
             android:textColor="@color/md_theme_background"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.625"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/placa" />
 
@@ -44,11 +46,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="12dp"
             android:layout_marginRight="10dp"
             android:text="Data de entrada: "
             android:textColor="@color/md_theme_background"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.625"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/entrada_dt" />
 

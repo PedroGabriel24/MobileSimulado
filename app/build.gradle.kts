@@ -48,4 +48,7 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(platform(libs.firebase.bom))
     implementation ("com.github.bumptech.glide:glide:4.16.0")
+    implementation ("com.google.android.material:material:1.11.0")
+    implementation ("androidx.compose.material3:material3:1.2.1")
+
 }
