@@ -74,8 +74,7 @@ public class AdapterCarro extends RecyclerView.Adapter<AdapterCarro.MyViewHolder
             @Override
             public boolean onLongClick(View v) {
                 if (listaCarro.get(holder.getAdapterPosition()).getDtSaida() == null) {
-                    // Car is still parked, show exit registration dialog
-                    showRegisterExitDialog(v, listaCarro.get(holder.getAdapterPosition()), holder.getAdapterPosition());
+                    registrarSaida(v, listaCarro.get(holder.getAdapterPosition()), holder.getAdapterPosition());
                 }
                 return true;
             }
@@ -127,21 +126,21 @@ public class AdapterCarro extends RecyclerView.Adapter<AdapterCarro.MyViewHolder
         return data.format(formatter);
     }
 
-    private void showRegisterExitDialog(View v, Carro carToUpdate, int position) {
+    private void registrarSaida(View v, Carro carroUpdate, int position) {
         AlertDialog.Builder alertNovo = new AlertDialog.Builder(v.getContext());
         TextView text = new TextView(v.getContext());
         LocalDateTime dtSaida = LocalDateTime.now();
-        Double predictedPrice = calcularPreco(carToUpdate.getDtEntrada(), dtSaida.toString());
+        Double preco = calcularPreco(carroUpdate.getDtEntrada(), dtSaida.toString());
 
         text.setText(String.format(
                 "Placa: %s\n" +
                         "Data de Entrada: %s\n" +
                         "Data de Saída: %s\n" +
                         "Preço: R$%.2f",
-                carToUpdate.getPlaca(),
-                formatarLocalDateTime(LocalDateTime.parse(carToUpdate.getDtEntrada())),
+                carroUpdate.getPlaca(),
+                formatarLocalDateTime(LocalDateTime.parse(carroUpdate.getDtEntrada())),
                 formatarLocalDateTime(dtSaida),
-                predictedPrice));
+                preco));
 
         LinearLayout layout = new LinearLayout(v.getContext());
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -154,10 +153,10 @@ public class AdapterCarro extends RecyclerView.Adapter<AdapterCarro.MyViewHolder
         alertNovo.setPositiveButton(R.string.registrar, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                carToUpdate.setDtSaida(dtSaida.toString());
-                carToUpdate.setPreco(predictedPrice);
-                carToUpdate.setUserEmail(userEmail);
-                db.salvar(carToUpdate, v.getContext());
+                carroUpdate.setDtSaida(dtSaida.toString());
+                carroUpdate.setPreco(preco);
+                carroUpdate.setUserEmail(userEmail);
+                db.salvar(carroUpdate, v.getContext());
                 notifyItemChanged(position);
             }
         });
