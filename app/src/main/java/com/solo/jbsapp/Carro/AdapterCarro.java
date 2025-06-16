@@ -1,4 +1,4 @@
-package com.solo.jbsapp;
+package com.solo.jbsapp.Carro;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
@@ -7,12 +7,16 @@ import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.solo.jbsapp.R;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -21,15 +25,13 @@ import java.util.List;
 
 public class AdapterCarro extends RecyclerView.Adapter<AdapterCarro.MyViewHolder> {
 
-    // Define a constant for the price rate, making it clear and easy to modify.
-    private static final double PRICE_PER_SECOND = 0.01; // Or adjust as needed, e.g., 0.60 for R$36/hour
+    private static final double PRECO_SEGUNDO = 0.01;
 
     private List<Carro> listaCarro;
+
     private String userEmail;
     private Boolean role;
 
-    // It's often better to inject dependencies like CarroRepository
-    // rather than instantiating them directly within the adapter.
     private CarroRepository db = new CarroRepository();
 
     public AdapterCarro(List<Carro> lista, String email, Boolean role) {
@@ -61,6 +63,13 @@ public class AdapterCarro extends RecyclerView.Adapter<AdapterCarro.MyViewHolder
             holder.dataSaida.setText(holder.itemView.getContext().getString(R.string.label_saida, holder.itemView.getContext().getString(R.string.no_info)));
         }
 
+        if (role) {
+            holder.lixeira.setVisibility(VISIBLE);
+        } else {
+            holder.lixeira.setVisibility(INVISIBLE);
+        }
+
+        // adicionar evento em cada elemento do RecyclerView
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -71,6 +80,14 @@ public class AdapterCarro extends RecyclerView.Adapter<AdapterCarro.MyViewHolder
                 return true;
             }
         });
+
+        holder.lixeira.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Carro carroParaRemover = listaCarro.get(holder.getAdapterPosition());
+                db.remover(carroParaRemover, v.getContext());
+            }
+        });
     }
 
     @Override
@@ -78,14 +95,18 @@ public class AdapterCarro extends RecyclerView.Adapter<AdapterCarro.MyViewHolder
         return listaCarro.size();
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView placa, dataEntrada, dataSaida, preco;
+        private ImageView lixeira;
+        private ConstraintLayout fundo; // Declarado, mas não usado no código fornecido.
+
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             placa = itemView.findViewById(R.id.placa);
             dataEntrada = itemView.findViewById(R.id.entrada_dt);
             dataSaida = itemView.findViewById(R.id.saida_dt);
             preco = itemView.findViewById(R.id.valorPreco);
+            lixeira = itemView.findViewById(R.id.lixeira);
         }
     }
 
@@ -98,7 +119,7 @@ public class AdapterCarro extends RecyclerView.Adapter<AdapterCarro.MyViewHolder
             duracao = 0;
         }
 
-        return duracao * PRICE_PER_SECOND;
+        return duracao * PRECO_SEGUNDO;
     }
 
     public static String formatarLocalDateTime(LocalDateTime data) {
@@ -144,5 +165,4 @@ public class AdapterCarro extends RecyclerView.Adapter<AdapterCarro.MyViewHolder
 
         alertNovo.show();
     }
-
 }

@@ -1,4 +1,4 @@
-package com.solo.jbsapp;
+package com.solo.jbsapp.Carro;
 
 import android.content.Context;
 import android.widget.Toast;
@@ -76,31 +76,15 @@ public class CarroRepository {
     public void remover(Carro carro, Context c){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection(COLLECTION).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection(COLLECTION).document(carro.getId()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                WriteBatch batch = db.batch();
-
-                for (DocumentSnapshot doc : task.getResult().getDocuments()){
-                    Carro carroDeleted = doc.toObject(Carro.class);
-
-                    if (carro.getPlaca().equals(carroDeleted.getPlaca()) && carro.getDtEntrada().equals(carroDeleted.getDtEntrada())){
-                        batch.delete(doc.getReference());
-                    }
-
-                    batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(c, "Registro deletado com sucesso!", Toast.LENGTH_SHORT).show();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(c, "Erro ao deletar registro: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
+            public void onSuccess(Void unused) {
+                Toast.makeText(c, "O registro da placa " + carro.getPlaca() + " foi deletado.", Toast.LENGTH_SHORT);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(c, "Não foi possivel deletar o registro da placa " + carro.getPlaca() + ".", Toast.LENGTH_SHORT);
             }
         });
     }
@@ -117,7 +101,7 @@ public class CarroRepository {
                     lista.clear();
                     for(DocumentSnapshot doc : value.getDocuments()){
                         Carro carro = doc.toObject(Carro.class);
-                        lista.addLast(carro);
+                        lista.add(0, carro);
                     }
                     adapterCarro.notifyDataSetChanged();
                 }
@@ -136,30 +120,15 @@ public class CarroRepository {
                 }
                 LocalDateTime atualMesAnterior = atual.minusMonths(1);
 
-                WriteBatch batch = db.batch();
-
                 for (DocumentSnapshot doc : task.getResult().getDocuments()){
                     Carro carro = doc.toObject(Carro.class);
 
                     if (carro.getDtSaida() != null){
                         LocalDateTime saida = LocalDateTime.parse(carro.getDtSaida());
 
-
                         if (saida.isBefore(atualMesAnterior) || saida.isEqual(atualMesAnterior)){
-                            batch.delete(doc.getReference());
+                            remover(carro, c);
                         }
-
-                        batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(c, "Registros deletados com sucesso!", Toast.LENGTH_SHORT).show();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(c, "Erro ao deletar registros: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        });
                     }
                 }
 

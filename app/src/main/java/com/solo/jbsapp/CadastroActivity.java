@@ -13,6 +13,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.solo.jbsapp.Carro.ListaCarro;
 
 public class CadastroActivity extends AppCompatActivity {
 
@@ -38,7 +39,7 @@ public class CadastroActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 db.cadastrarUser(
-                        new User(emailField.getText().toString(), senhaField.getText().toString(), true),
+                        new User(emailField.getText().toString(), senhaField.getText().toString(), false),
                         getApplicationContext(),
                         new UserRepository.CadastroCallback() {
                             @Override

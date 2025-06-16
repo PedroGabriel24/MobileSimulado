@@ -13,6 +13,15 @@
         android:layout_height="172dp"
         android:padding="5sp">
 
+        <ImageView
+            android:id="@+id/lixeira"
+            android:layout_width="49dp"
+            android:layout_height="58dp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/lixeira" />
+
         <TextView
             android:id="@+id/placa"
             android:layout_width="0dp"

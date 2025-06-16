@@ -1,10 +1,12 @@
-package com.solo.jbsapp;
+package com.solo.jbsapp.Carro;
 
 import static android.view.View.INVISIBLE;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.service.controls.actions.FloatAction;
+import android.speech.RecognizerIntent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -21,6 +23,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.solo.jbsapp.Carro.AdapterCarro;
+import com.solo.jbsapp.Carro.Carro;
+import com.solo.jbsapp.Carro.CarroRepository;
+import com.solo.jbsapp.LoginActivity;
+import com.solo.jbsapp.R;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
