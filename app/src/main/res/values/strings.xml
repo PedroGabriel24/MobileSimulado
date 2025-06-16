@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">JBSApp</string>
+
+    <string name="label_entrada">Data de Entrada: %s</string>
+    <string name="label_saida">Data de Saída: %s</string>
+    <string name="label_preco">Preço: R$%s</string>
+    <string name="no_info">Nenhuma Informação</string>
+    <string name="titulo_preco">Preço do estacionamento</string>
+    <string name="registrar">Registrar</string>
+    <string name="cancelar">Cancelar</string>
+</resources>

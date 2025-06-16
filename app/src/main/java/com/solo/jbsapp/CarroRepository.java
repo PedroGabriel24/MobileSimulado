@@ -8,12 +8,14 @@ import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,35 +23,83 @@ import java.util.List;
 
 public class CarroRepository {
 
-    private final String COLLECTION = "cars";
+    private static final String COLLECTION = "cars";
 
     public CarroRepository(){}
 
-    public void salvar(Carro carro, Context c){
+    public void salvar(Carro carro, Context c) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection(COLLECTION).document(String.valueOf(carro.getId())).set(carro).addOnCompleteListener(new OnCompleteListener<Void>() {
+        db.collection(COLLECTION).document(carro.getId()).set(carro).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
+                if (task.isSuccessful()) {
                     Toast.makeText(c, "Registrada a entrada do carro de placa: " + carro.getPlaca(), Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     Toast.makeText(c, "Não foi possivel registrar a entrada do carro de placa: " + carro.getPlaca(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
+    public void verificarCarro(Carro addCarro, CarroCallback callback){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection(COLLECTION)
+                .whereEqualTo("placa", addCarro.getPlaca())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        boolean estacionado = false;
+
+                        for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                            Carro carro = doc.toObject(Carro.class);
+
+                            if (carro != null && carro.getDtSaida() == null) {
+                                estacionado = true;
+                                break;
+                            }
+                        }
+                        callback.onCarroCallback(!estacionado);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(FirebaseFirestore.getInstance().getApp().getApplicationContext(), "Erro ao verificar placa: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        callback.onCarroCallback(false);
+                    }
+                });
+    }
+
     public void remover(Carro carro, Context c){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection(COLLECTION).document(String.valueOf(carro.getId())).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+        db.collection(COLLECTION).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    Toast.makeText(c, "Registrada a saída do carro de placa: " + carro.getPlaca(), Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(c, "Não foi possivel registrar a saída do carro de placa: " + carro.getPlaca(), Toast.LENGTH_SHORT).show();
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                WriteBatch batch = db.batch();
+
+                for (DocumentSnapshot doc : task.getResult().getDocuments()){
+                    Carro carroDeleted = doc.toObject(Carro.class);
+
+                    if (carro.getPlaca().equals(carroDeleted.getPlaca()) && carro.getDtEntrada().equals(carroDeleted.getDtEntrada())){
+                        batch.delete(doc.getReference());
+                    }
+
+                    batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(c, "Registro deletado com sucesso!", Toast.LENGTH_SHORT).show();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(c, "Erro ao deletar registro: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
             }
         });
@@ -67,7 +117,7 @@ public class CarroRepository {
                     lista.clear();
                     for(DocumentSnapshot doc : value.getDocuments()){
                         Carro carro = doc.toObject(Carro.class);
-                        lista.add(carro);
+                        lista.addLast(carro);
                     }
                     adapterCarro.notifyDataSetChanged();
                 }
@@ -86,6 +136,8 @@ public class CarroRepository {
                 }
                 LocalDateTime atualMesAnterior = atual.minusMonths(1);
 
+                WriteBatch batch = db.batch();
+
                 for (DocumentSnapshot doc : task.getResult().getDocuments()){
                     Carro carro = doc.toObject(Carro.class);
 
@@ -94,20 +146,29 @@ public class CarroRepository {
 
 
                         if (saida.isBefore(atualMesAnterior) || saida.isEqual(atualMesAnterior)){
-                            db.collection(COLLECTION)
-                                    .document(String.valueOf(carro.getId()))
-                                    .delete()
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(c, "Não foi possivel deletar a placa de número: "+ carro.getPlaca(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
+                            batch.delete(doc.getReference());
                         }
+
+                        batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(c, "Registros deletados com sucesso!", Toast.LENGTH_SHORT).show();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(c, "Erro ao deletar registros: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
                     }
                 }
 
             }
         });
+    }
+
+    public interface CarroCallback{
+
+        void onCarroCallback(boolean sucesso);
     }
 }

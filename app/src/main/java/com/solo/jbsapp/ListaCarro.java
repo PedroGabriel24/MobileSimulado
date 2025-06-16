@@ -5,12 +5,11 @@ import static android.view.View.INVISIBLE;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.service.controls.actions.FloatAction;
-import android.speech.RecognizerIntent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
@@ -22,14 +21,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.solo.jbsapp.databinding.ActivityListaCarroBinding;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ListaCarro extends AppCompatActivity {
-    private CarroRepository db = new CarroRepository();
+    private final CarroRepository db = new CarroRepository();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +56,7 @@ public class ListaCarro extends AppCompatActivity {
         rv.setLayoutManager(new GridLayoutManager(getApplicationContext(), 1));
         // Configurar o Adapter do RecyclerView
         List<Carro> listaCarro = new ArrayList<>();
-        AdapterCarro adapterCarro = new AdapterCarro(listaCarro, bundle.getString("email"));
+        AdapterCarro adapterCarro = new AdapterCarro(listaCarro, bundle.getString("email"), bundle.getBoolean("role"));
         rv.setAdapter(adapterCarro);
         db.listar(listaCarro, adapterCarro, getApplicationContext());
 
@@ -85,8 +83,17 @@ public class ListaCarro extends AppCompatActivity {
                 alertNovo.setPositiveButton("Registrar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Carro addCarro = new Carro(listaCarro.size() + 1, editPlaca.getText().toString(), LocalDateTime.now().toString(), bundle.getString("email"));
-                        db.salvar(addCarro, ListaCarro.this);
+                        Carro addCarro = new Carro(editPlaca.getText().toString(), LocalDateTime.now().toString(), bundle.getString("email"));
+                        db.verificarCarro(addCarro, new CarroRepository.CarroCallback() {
+                            @Override
+                            public void onCarroCallback(boolean sucesso) {
+                                if (sucesso){
+                                    db.salvar(addCarro, ListaCarro.this);
+                                }else{
+                                    Toast.makeText(ListaCarro.this, "A Placa já está registrada.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
                     }
                 });
                 alertNovo.setNegativeButton("Cancelar", null);
@@ -110,9 +117,9 @@ public class ListaCarro extends AppCompatActivity {
                 layout.setPadding(30, 0, 30, 0);
 
                 // Atribuir layout ao modal
+
                 alertNovo.setView(layout);
                 alertNovo.setTitle("Rotina");
-
                 // Definir os botões
                 alertNovo.setPositiveButton("Rodar Rotina", new DialogInterface.OnClickListener() {
                     @Override
